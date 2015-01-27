@@ -1,7 +1,14 @@
 {
   "name": "fit.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fit",
+  "main": "fit.js",
+  "scripts": {
+    "start": "node ./node_modules/.bin/coffee -c -w fit.coffee"
+  },
   "author": "sugarshin",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "coffee-script": "^1.8.0"
+  }
 }

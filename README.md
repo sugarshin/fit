@@ -1,1 +1,5 @@
 # Fit
+
+```shell
+npm start
+```
