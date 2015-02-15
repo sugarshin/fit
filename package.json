@@ -1,6 +1,6 @@
 {
   "name": "fit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "fit",
   "repository": "git@github.com:sugarshin/fit.git",
   "main": "./fit.js",
@@ -22,5 +22,10 @@
     "mocha-phantomjs": "^3.5.3",
     "phantomjs": "^1.9.15",
     "power-assert": "^0.10.1"
+  },
+  "dependencies": {
+    "browserify-shim": "^3.8.2",
+    "jquery": "^2.1.3",
+    "throttle-debounce": "^0.1.0"
   }
 }

@@ -13,7 +13,7 @@ npm i -S sugarshin/fit
 ```coffeescript
 Fit = require 'fit'
 
-new Fit
+new Fit element
 ```
 
 or
@@ -22,7 +22,7 @@ or
 <script src="jquery.js"></script>
 <script src="fit.js"></script>
 <script>
-  new Fit;
+  new Fit(element);
 </script>
 ```
 

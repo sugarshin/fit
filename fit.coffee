@@ -1,5 +1,7 @@
-do (root = this, factory = ($) ->
+do (root = this, factory = ($, td) ->
   "use strict"
+
+  if td is undefined then td = $
 
   class Fit
 
@@ -7,17 +9,31 @@ do (root = this, factory = ($) ->
 
     _defaults:
       type: 'cover'# 'cover' or 'contain'
-      res: 0.5625# 16:9
+      ratio: 0.5625# 16:9
       maxHeight: null
       minHeight: null
       lineHeight: false
+      delay: 300
+      delayType: 'debounce'# or 'throttle'
+
+    # https://github.com/klughammer/node-randomstring
+    _getRandomString: do =>
+      chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz'
+      return (length = 32) ->
+        string = ''
+        for i in [0...length]
+          randomNumber = Math.floor(Math.random() * chars.length)
+          string += chars.substring(randomNumber, randomNumber + 1)
+        return string
 
     _configure: (el, opts) ->
       @$el = $(el)
       @opts = $.extend {}, @_defaults, opts
+      @_namespace = @_getRandomString()
 
     constructor: (@el, opts) ->
       @_configure @el, opts
+      @events()
       @resize()
 
     setWindowSize: ->
@@ -40,16 +56,16 @@ do (root = this, factory = ($) ->
 
     calcSize: ->
       @setWindowSize()
-      displayRes = @getWindowSize()[1] / @getWindowSize()[0]
+      displayRatio = @getWindowSize()[1] / @getWindowSize()[0]
 
-      if @opts.res > displayRes
+      if @opts.ratio > displayRatio
         @_width = @getWindowSize()[0]
-        @_height = @_width * @opts.res
+        @_height = @_width * @opts.ratio
         @_marginTop = -((@_height - @getWindowSize()[1]) / 2)
         @_marginLeft = 0
       else
-        @_width = @getWindowSize()[1] / @opts.res
-        @_height = @_width * @opts.res
+        @_width = @getWindowSize()[1] / @opts.ratio
+        @_height = @_width * @opts.ratio
         @_marginTop = 0
         @_marginLeft = -((@_width - @getWindowSize()[0]) / 2)
       return this
@@ -76,9 +92,18 @@ do (root = this, factory = ($) ->
         @contain()
       return this
 
+    events: ->
+      _$window.on "resize.fit:#{@_namespace}", td[@opts.delayType] @opts.delay, =>
+        @resize()
+      return this
+
+    unbind: ->
+      _$window.off "resize.fit:#{@_namespace}"
+      return this
+
 ) ->
   if typeof module is 'object' and typeof module.exports is 'object'
-    module.exports = factory require 'jquery'
+    module.exports = factory require('jquery'), require('throttle-debounce')
   else
     root.Fit or= factory root.jQuery
   return
