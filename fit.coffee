@@ -17,7 +17,7 @@ do (root = this, factory = ($, td) ->
       delayType: 'debounce'# or 'throttle'
 
     # https://github.com/klughammer/node-randomstring
-    _getRandomString: do =>
+    _getRandomString: do ->
       chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz'
       return (length = 32) ->
         string = ''
