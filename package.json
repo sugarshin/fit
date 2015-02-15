@@ -1,7 +1,7 @@
 {
   "name": "fit",
-  "version": "0.2.0",
-  "description": "fit",
+  "version": "0.2.1",
+  "description": "Fit",
   "repository": "git@github.com:sugarshin/fit.git",
   "main": "./fit.js",
   "scripts": {

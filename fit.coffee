@@ -8,12 +8,12 @@ do (root = this, factory = ($, td) ->
     _$window = $(window)
 
     _defaults:
-      type: 'cover'# 'cover' or 'contain'
-      ratio: 0.5625# 16:9
+      type: 'cover' # 'cover' or 'contain'
+      ratio: 0.5625 # 16:9
       maxHeight: null
       minHeight: null
       lineHeight: false
-      delay: 300
+      delay: 400
       delayType: 'debounce'# or 'throttle'
 
     # https://github.com/klughammer/node-randomstring
@@ -54,24 +54,42 @@ do (root = this, factory = ($, td) ->
         @_windowHeight
       ]
 
-    calcSize: ->
+    _calcCover: ->
       @setWindowSize()
       displayRatio = @getWindowSize()[1] / @getWindowSize()[0]
 
       if @opts.ratio > displayRatio
         @_width = @getWindowSize()[0]
-        @_height = @_width * @opts.ratio
-        @_marginTop = -((@_height - @getWindowSize()[1]) / 2)
-        @_marginLeft = 0
       else
         @_width = @getWindowSize()[1] / @opts.ratio
-        @_height = @_width * @opts.ratio
-        @_marginTop = 0
-        @_marginLeft = -((@_width - @getWindowSize()[0]) / 2)
+
+      @_height = @_width * @opts.ratio
+      @_marginTop = -(@_height / 2)
+      @_marginLeft = -(@_width / 2)
       return this
 
-    cover: ->
-      @calcSize()
+    _calcContain: ->
+      @setWindowSize()
+      displayRatio = @getWindowSize()[1] / @getWindowSize()[0]
+
+      if @opts.ratio > displayRatio
+        @_height = @getWindowSize()[1] 
+        @_width = @_height / @opts.ratio
+        @_marginTop = -(@getWindowSize()[1] / 2)
+        @_marginLeft = -(@_width / 2)
+      else
+        @_width = @getWindowSize()[0]
+        @_height = @_width * @opts.ratio
+        @_marginTop = -(@_height / 2)
+        @_marginLeft = -(@getWindowSize()[0] / 2)
+      return this
+
+    resize: ->
+      if @opts.type is 'cover'
+        @_calcCover()
+      else if @opts.type is 'contain'
+        @_calcContain()
+
       @$el.css
         width: @_width
         height: @_height
@@ -81,15 +99,6 @@ do (root = this, factory = ($, td) ->
       if @opts.lineHeight is true
         @$el.css
           lineHeight: "#{@_height}px"
-      return this
-
-    contain: ->
-
-    resize: ->
-      if @opts.type is 'cover'
-        @cover()
-      else if @opts.type is 'contain'
-        @contain()
       return this
 
     events: ->

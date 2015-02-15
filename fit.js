@@ -22,7 +22,7 @@
       maxHeight: null,
       minHeight: null,
       lineHeight: false,
-      delay: 300,
+      delay: 400,
       delayType: 'debounce'
     };
 
@@ -74,26 +74,45 @@
       return [this._windowWidth, this._windowHeight];
     };
 
-    Fit.prototype.calcSize = function() {
+    Fit.prototype._calcCover = function() {
       var displayRatio;
       this.setWindowSize();
       displayRatio = this.getWindowSize()[1] / this.getWindowSize()[0];
       if (this.opts.ratio > displayRatio) {
         this._width = this.getWindowSize()[0];
-        this._height = this._width * this.opts.ratio;
-        this._marginTop = -((this._height - this.getWindowSize()[1]) / 2);
-        this._marginLeft = 0;
       } else {
         this._width = this.getWindowSize()[1] / this.opts.ratio;
+      }
+      this._height = this._width * this.opts.ratio;
+      this._marginTop = -(this._height / 2);
+      this._marginLeft = -(this._width / 2);
+      return this;
+    };
+
+    Fit.prototype._calcContain = function() {
+      var displayRatio;
+      this.setWindowSize();
+      displayRatio = this.getWindowSize()[1] / this.getWindowSize()[0];
+      if (this.opts.ratio > displayRatio) {
+        this._height = this.getWindowSize()[1];
+        this._width = this._height / this.opts.ratio;
+        this._marginTop = -(this.getWindowSize()[1] / 2);
+        this._marginLeft = -(this._width / 2);
+      } else {
+        this._width = this.getWindowSize()[0];
         this._height = this._width * this.opts.ratio;
-        this._marginTop = 0;
-        this._marginLeft = -((this._width - this.getWindowSize()[0]) / 2);
+        this._marginTop = -(this._height / 2);
+        this._marginLeft = -(this.getWindowSize()[0] / 2);
       }
       return this;
     };
 
-    Fit.prototype.cover = function() {
-      this.calcSize();
+    Fit.prototype.resize = function() {
+      if (this.opts.type === 'cover') {
+        this._calcCover();
+      } else if (this.opts.type === 'contain') {
+        this._calcContain();
+      }
       this.$el.css({
         width: this._width,
         height: this._height,
@@ -104,17 +123,6 @@
         this.$el.css({
           lineHeight: this._height + "px"
         });
-      }
-      return this;
-    };
-
-    Fit.prototype.contain = function() {};
-
-    Fit.prototype.resize = function() {
-      if (this.opts.type === 'cover') {
-        this.cover();
-      } else if (this.opts.type === 'contain') {
-        this.contain();
       }
       return this;
     };
