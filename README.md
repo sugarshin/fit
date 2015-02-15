@@ -20,6 +20,7 @@ or
 
 ```html
 <script src="jquery.js"></script>
+<script src="throttle-debounce.js"></script>
 <script src="fit.js"></script>
 <script>
   new Fit(element);
