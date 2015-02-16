@@ -23,7 +23,7 @@
       minHeight: null,
       lineHeight: false,
       delay: 400,
-      delayType: 'debounce'
+      delayType: 'throttle'
     };
 
     Fit.prototype._getRandomString = (function() {

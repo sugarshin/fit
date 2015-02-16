@@ -14,7 +14,7 @@ do (root = this, factory = ($, td) ->
       minHeight: null
       lineHeight: false
       delay: 400
-      delayType: 'debounce'# or 'throttle'
+      delayType: 'throttle' # or 'debounce'
 
     # https://github.com/klughammer/node-randomstring
     _getRandomString: do ->
