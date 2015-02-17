@@ -10,8 +10,7 @@ do (root = this, factory = ($, td) ->
     _defaults:
       type: 'cover' # 'cover' or 'contain'
       ratio: 0.5625 # 16:9
-      maxHeight: null
-      minHeight: null
+      parent: 'window'
       lineHeight: false
       delay: 400
       delayType: 'throttle' # or 'debounce'
@@ -29,62 +28,89 @@ do (root = this, factory = ($, td) ->
     _configure: (el, opts) ->
       @$el = $(el)
       @opts = $.extend {}, @_defaults, opts
+      @_$parent = $((if @opts.parent is 'window' then window else @opts.parent))
       @_namespace = @_getRandomString()
+
+      # initialize style
+      @$el.css
+        position: 'absolute'
+        top: '50%'
+        left: '50%'
+        height: '100%'
+
+      $parent = if @opts.parent is 'window' then $('body') else @_$parent
+      $parent.css
+        position: 'relative'
+        overflow: 'hidden'
 
     constructor: (@el, opts) ->
       @_configure @el, opts
       @events()
       @resize()
 
-    setWindowSize: ->
-      @_windowWidth = _$window.width()
-      windowHeight = _$window.height()
-      if @opts.maxHeight?
-        @_windowHeight = @opts.maxHeight
-      else if @opts.minHeight? and
-      windowHeight < @opts.minHeight
-        @_windowHeight = @opts.minHeight
+    setParentSize: (which, val = null) ->
+      if which is 'width'
+        unless val?
+          @_parentWidth = @_$parent.width()
+        else
+          @_parentWidth = val
+
+      else if which is 'height'
+        unless val?
+          @_parentHeight = @_$parent.height()
+        else
+          @_parentHeight = val
+
       else
-        @_windowHeight = windowHeight
+        @_parentWidth = @_$parent.width()
+        @_parentHeight = @_$parent.height()
       return this
 
-    getWindowSize: ->
-      return [
-        @_windowWidth
-        @_windowHeight
-      ]
+    getParentSize: (which) ->
+      if which is 'width'
+        return @_parentWidth
+      else if which is 'height'
+        return @_parentHeight
+      else
+        return
 
     _calcCover: ->
-      @setWindowSize()
-      displayRatio = @getWindowSize()[1] / @getWindowSize()[0]
+      parentWidth = @getParentSize 'width'
+      parentHeight = @getParentSize 'height'
 
-      if @opts.ratio > displayRatio
-        @_width = @getWindowSize()[0]
+      parentRatio = parentHeight / parentWidth
+
+      if @opts.ratio > parentRatio
+        @_width = parentWidth
       else
-        @_width = @getWindowSize()[1] / @opts.ratio
+        @_width = parentHeight / @opts.ratio
 
       @_height = @_width * @opts.ratio
+
       @_marginTop = -(@_height / 2)
       @_marginLeft = -(@_width / 2)
       return this
 
     _calcContain: ->
-      @setWindowSize()
-      displayRatio = @getWindowSize()[1] / @getWindowSize()[0]
+      parentWidth = @getParentSize 'width'
+      parentHeight = @getParentSize 'height'
 
-      if @opts.ratio > displayRatio
-        @_height = @getWindowSize()[1] 
+      parentRatio = parentHeight / parentWidth
+
+      if @opts.ratio > parentRatio
+        @_height = parentHeight
         @_width = @_height / @opts.ratio
-        @_marginTop = -(@getWindowSize()[1] / 2)
+        @_marginTop = -(parentHeight / 2)
         @_marginLeft = -(@_width / 2)
       else
-        @_width = @getWindowSize()[0]
+        @_width = parentWidth
         @_height = @_width * @opts.ratio
         @_marginTop = -(@_height / 2)
-        @_marginLeft = -(@getWindowSize()[0] / 2)
+        @_marginLeft = -(parentWidth / 2)
       return this
 
     resize: ->
+      @setParentSize()
       if @opts.type is 'cover'
         @_calcCover()
       else if @opts.type is 'contain'
@@ -97,8 +123,7 @@ do (root = this, factory = ($, td) ->
         marginLeft: @_marginLeft
 
       if @opts.lineHeight is true
-        @$el.css
-          lineHeight: "#{@_height}px"
+        @$el.css 'line-height', "#{@_height}px"
       return this
 
     events: ->

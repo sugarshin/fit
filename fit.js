@@ -19,8 +19,7 @@
     Fit.prototype._defaults = {
       type: 'cover',
       ratio: 0.5625,
-      maxHeight: null,
-      minHeight: null,
+      parent: 'window',
       lineHeight: false,
       delay: 400,
       delayType: 'throttle'
@@ -44,9 +43,22 @@
     })();
 
     Fit.prototype._configure = function(el, opts) {
+      var $parent;
       this.$el = $(el);
       this.opts = $.extend({}, this._defaults, opts);
-      return this._namespace = this._getRandomString();
+      this._$parent = $((this.opts.parent === 'window' ? window : this.opts.parent));
+      this._namespace = this._getRandomString();
+      this.$el.css({
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        height: '100%'
+      });
+      $parent = this.opts.parent === 'window' ? $('body') : this._$parent;
+      return $parent.css({
+        position: 'relative',
+        overflow: 'hidden'
+      });
     };
 
     function Fit(_at_el, opts) {
@@ -56,32 +68,48 @@
       this.resize();
     }
 
-    Fit.prototype.setWindowSize = function() {
-      var windowHeight;
-      this._windowWidth = _$window.width();
-      windowHeight = _$window.height();
-      if (this.opts.maxHeight != null) {
-        this._windowHeight = this.opts.maxHeight;
-      } else if ((this.opts.minHeight != null) && windowHeight < this.opts.minHeight) {
-        this._windowHeight = this.opts.minHeight;
+    Fit.prototype.setParentSize = function(which, val) {
+      if (val == null) {
+        val = null;
+      }
+      if (which === 'width') {
+        if (val == null) {
+          this._parentWidth = this._$parent.width();
+        } else {
+          this._parentWidth = val;
+        }
+      } else if (which === 'height') {
+        if (val == null) {
+          this._parentHeight = this._$parent.height();
+        } else {
+          this._parentHeight = val;
+        }
       } else {
-        this._windowHeight = windowHeight;
+        this._parentWidth = this._$parent.width();
+        this._parentHeight = this._$parent.height();
       }
       return this;
     };
 
-    Fit.prototype.getWindowSize = function() {
-      return [this._windowWidth, this._windowHeight];
+    Fit.prototype.getParentSize = function(which) {
+      if (which === 'width') {
+        return this._parentWidth;
+      } else if (which === 'height') {
+        return this._parentHeight;
+      } else {
+
+      }
     };
 
     Fit.prototype._calcCover = function() {
-      var displayRatio;
-      this.setWindowSize();
-      displayRatio = this.getWindowSize()[1] / this.getWindowSize()[0];
-      if (this.opts.ratio > displayRatio) {
-        this._width = this.getWindowSize()[0];
+      var parentHeight, parentRatio, parentWidth;
+      parentWidth = this.getParentSize('width');
+      parentHeight = this.getParentSize('height');
+      parentRatio = parentHeight / parentWidth;
+      if (this.opts.ratio > parentRatio) {
+        this._width = parentWidth;
       } else {
-        this._width = this.getWindowSize()[1] / this.opts.ratio;
+        this._width = parentHeight / this.opts.ratio;
       }
       this._height = this._width * this.opts.ratio;
       this._marginTop = -(this._height / 2);
@@ -90,24 +118,26 @@
     };
 
     Fit.prototype._calcContain = function() {
-      var displayRatio;
-      this.setWindowSize();
-      displayRatio = this.getWindowSize()[1] / this.getWindowSize()[0];
-      if (this.opts.ratio > displayRatio) {
-        this._height = this.getWindowSize()[1];
+      var parentHeight, parentRatio, parentWidth;
+      parentWidth = this.getParentSize('width');
+      parentHeight = this.getParentSize('height');
+      parentRatio = parentHeight / parentWidth;
+      if (this.opts.ratio > parentRatio) {
+        this._height = parentHeight;
         this._width = this._height / this.opts.ratio;
-        this._marginTop = -(this.getWindowSize()[1] / 2);
+        this._marginTop = -(parentHeight / 2);
         this._marginLeft = -(this._width / 2);
       } else {
-        this._width = this.getWindowSize()[0];
+        this._width = parentWidth;
         this._height = this._width * this.opts.ratio;
         this._marginTop = -(this._height / 2);
-        this._marginLeft = -(this.getWindowSize()[0] / 2);
+        this._marginLeft = -(parentWidth / 2);
       }
       return this;
     };
 
     Fit.prototype.resize = function() {
+      this.setParentSize();
       if (this.opts.type === 'cover') {
         this._calcCover();
       } else if (this.opts.type === 'contain') {
@@ -120,9 +150,7 @@
         marginLeft: this._marginLeft
       });
       if (this.opts.lineHeight === true) {
-        this.$el.css({
-          lineHeight: this._height + "px"
-        });
+        this.$el.css('line-height', this._height + "px");
       }
       return this;
     };

@@ -1,11 +1,11 @@
 # Fit
 
+[![Build Status](https://travis-ci.org/sugarshin/fit.svg?branch=master)](https://travis-ci.org/sugarshin/fit) [![Coverage Status](https://coveralls.io/repos/sugarshin/fit/badge.svg)](https://coveralls.io/r/sugarshin/fit) [![GitHub version](https://badge.fury.io/gh/sugarshin%2Ffit.svg)](http://badge.fury.io/gh/sugarshin%2Ffit) [![License](http://img.shields.io/:license-mit-blue.svg)](http://sugarshin.mit-license.org/)
+
 Fit
 
-[![Build Status](https://travis-ci.org/sugarshin/fit.svg?branch=master)](https://travis-ci.org/sugarshin/fit) [![GitHub version](https://badge.fury.io/gh/sugarshin%2Ffit.svg)](http://badge.fury.io/gh/sugarshin%2Ffit) [![License](http://img.shields.io/:license-mit-blue.svg)](http://sugarshin.mit-license.org/)
-
 ```shell
-npm i -S sugarshin/fit
+npm i sugarshin/fit
 ```
 
 ## Usage
