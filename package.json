@@ -1,13 +1,14 @@
 {
   "name": "fit",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Fit",
   "repository": "git@github.com:sugarshin/fit.git",
-  "main": "./fit.js",
+  "main": "fit.js",
   "scripts": {
-    "start": "node ./node_modules/.bin/coffee -cbw fit.coffee",
-    "pretest": "node ./node_modules/.bin/browserify -t coffeeify test/test.coffee -o test/test.js",
-    "test": "node ./node_modules/.bin/phantomjs ./node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee test/index.html"
+    "start": "coffee -cbw fit.coffee",
+    "pretest": "browserify -t coffeeify test/test.coffee -o test/test.js",
+    "test": "mocha-phantomjs -p node_modules/.bin/phantomjs test/index.html",
+    "build": "uglifyjs fit.js -cm --comments '/\\/*!/' -o fit.min.js"
   },
   "engines": {
     "node": "0.10.x"
@@ -21,7 +22,8 @@
     "mocha": "^2.1.0",
     "mocha-phantomjs": "^3.5.3",
     "phantomjs": "^1.9.15",
-    "power-assert": "^0.10.1"
+    "power-assert": "^0.10.1",
+    "uglify-js": "^2.4.16"
   },
   "dependencies": {
     "browserify-shim": "^3.8.2",

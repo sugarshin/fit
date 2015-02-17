@@ -1,3 +1,9 @@
+###!
+ * @license fit
+ * (c) sugarshin
+ * License: MIT
+###
+
 do (root = this, factory = ($, td) ->
   "use strict"
 
@@ -25,13 +31,7 @@ do (root = this, factory = ($, td) ->
           string += chars.substring(randomNumber, randomNumber + 1)
         return string
 
-    _configure: (el, opts) ->
-      @$el = $(el)
-      @opts = $.extend {}, @_defaults, opts
-      @_$parent = $((if @opts.parent is 'window' then window else @opts.parent))
-      @_namespace = @_getRandomString()
-
-      # initialize style
+    _initStyling: ->
       @$el.css
         position: 'absolute'
         top: '50%'
@@ -43,23 +43,30 @@ do (root = this, factory = ($, td) ->
         position: 'relative'
         overflow: 'hidden'
 
+    _configure: (el, opts) ->
+      @$el = $(el)
+      @opts = $.extend {}, @_defaults, opts
+      @_$parent = $((if @opts.parent is 'window' then window else @opts.parent))
+      @_namespace = @_getRandomString()
+      @_initStyling()
+
     constructor: (@el, opts) ->
       @_configure @el, opts
       @events()
       @resize()
 
-    setParentSize: (which, val = null) ->
+    setParentSize: (which, val) ->
       if which is 'width'
-        unless val?
-          @_parentWidth = @_$parent.width()
-        else
+        if val?
           @_parentWidth = val
+        else
+          @_parentWidth = @_$parent.width()
 
       else if which is 'height'
-        unless val?
-          @_parentHeight = @_$parent.height()
-        else
+        if val?
           @_parentHeight = val
+        else
+          @_parentHeight = @_$parent.height()
 
       else
         @_parentWidth = @_$parent.width()
